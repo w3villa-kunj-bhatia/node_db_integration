@@ -45,4 +45,21 @@ router.put("/", authMiddleware, async (req, res) => {
   }
 });
 
+router.delete("/", authMiddleware, async (req, res) => {
+  try {
+    const deletedProfile = await Profile.findOneAndDelete({
+      user: req.user.id,
+    });
+
+    if (!deletedProfile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    res.status(200).json({ message: "Profile deleted successfully" });
+  } catch (error) {
+    console.error("Delete Profile error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 export default router;

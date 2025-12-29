@@ -16,6 +16,9 @@
       <div class="nav-actions">
         <a href="editProfile.html">Edit Profile</a>
         <button id="logoutBtn">Logout</button>
+        <button id="deleteBtn" style="background: red; color: white">
+          Delete Profile
+        </button>
       </div>
     </div>
 
@@ -62,6 +65,27 @@
         localStorage.removeItem("token");
         window.location.href = "login.html";
       });
+
+      document
+        .getElementById("deleteBtn")
+        .addEventListener("click", async () => {
+          if (!confirm("Are you sure you want to delete your profile?")) return;
+
+          const res = await fetch("http://localhost:5000/profile", {
+            method: "DELETE",
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          });
+
+          const data = await res.json();
+          alert(data.message);
+
+          if (res.status === 200) {
+            // profile deleted → redirect to create profile
+            window.location.href = "profile.html";
+          }
+        });
     </script>
   </body>
 </html>
