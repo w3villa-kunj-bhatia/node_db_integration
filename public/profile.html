@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Create Profile</title>
+  </head>
+  <body>
+    <div class="form-container">
+      <h2>Create Your Profile</h2>
+
+      <form id="profileForm">
+        <input type="number" id="age" placeholder="Age" required />
+        <input type="text" id="industry" placeholder="Industry" required />
+        <input type="text" id="role" placeholder="Role" required />
+
+        <input
+          type="text"
+          id="skills"
+          placeholder="Skills (comma separated)"
+          required
+        />
+        <input
+          type="text"
+          id="hobbies"
+          placeholder="Hobbies (comma separated)"
+          required
+        />
+
+        <input type="text" id="bio" placeholder="Bio" />
+        <input type="text" id="location" placeholder="Location" />
+
+        <button type="submit">Save Profile</button>
+      </form>
+
+      <p id="profileResponse"></p>
+    </div>
+
+    <script src="profile.js"></script>
+  </body>
+</html>

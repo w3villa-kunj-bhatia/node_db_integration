@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Dashboard</title>
+
+    <style>
+      .profile-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 350px;
+        margin: 20px auto;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 10px;
+        font-family: Arial, sans-serif;
+      }
+
+      .profile-card h2 {
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .profile-details p {
+        margin: 6px 0;
+      }
+
+      nav {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        width: 350px;
+        margin-inline: auto;
+      }
+
+      nav button {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Dashboard</h1>
+      <p id="welcomeMsg"></p>
+
+      <div id="profileContainer"></div>
+
+      <nav>
+        <a href="profile.html">Edit Profile</a>
+        <button id="logoutBtn">Logout</button>
+      </nav>
+    </div>
+
+    <script>
+      const token = localStorage.getItem("token");
+      const profileContainer = document.getElementById("profileContainer");
+
+      if (!token) {
+        window.location.href = "login.html";
+      }
+
+      // Fetch profile
+      async function loadProfile() {
+        const response = await fetch("http://localhost:5000/profile/me", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
+
+        const data = await response.json();
+        if (data.profile) {
+          const p = data.profile;
+
+          profileContainer.innerHTML = `
+            <div class="profile-card">
+              <h1>Welcome, ${p.name}</h1>
+              <h2>${p.role} • ${p.industry}</h2>
+              <div class="profile-details">
+                <p><strong>Age:</strong> ${p.age}</p>
+                <p><strong>Bio:</strong> ${p.bio}</p>
+                <p><strong>Location:</strong> ${p.location}</p>
+                <p><strong>Skills:</strong> ${p.skills.join(", ")}</p>
+                <p><strong>Hobbies:</strong> ${p.hobbies.join(", ")}</p>
+              </div>
+            </div>
+          `;
+        } else {
+          profileContainer.innerHTML = "<p>No profile found. Create one.</p>";
+        }
+      }
+
+      loadProfile();
+
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("token");
+        window.location.href = "login.html";
+      });
+    </script>
+  </body>
+</html>
