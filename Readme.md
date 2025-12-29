@@ -88,10 +88,13 @@ Authorization: Bearer <token>
 ## **Project Structure**
 
 ```
+📁 config
 📁 controllers
 📁 routes
 📁 middleware
 📁 models
+📁 public (includes frontend)
+📁 utils
 server.js
 .env
 ```
