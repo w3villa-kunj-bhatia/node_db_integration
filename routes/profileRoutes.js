@@ -1,8 +1,9 @@
 import express from "express";
+import { authMiddleware } from "../middleware/authMiddleware.js";
+import { createProfile } from "../controllers/profileController.js";
+
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.json({ route: "Profile route working" });
-});
+router.post("/profiles", authMiddleware, createProfile);
 
 export default router;
