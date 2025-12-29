@@ -24,4 +24,25 @@ router.get("/me", authMiddleware, async (req, res) => {
 
 router.post("/", authMiddleware, createProfile);
 
+router.put("/", authMiddleware, async (req, res) => {
+  try {
+    const UserId = req.user.id;
+
+    const updated = await Profile.findOneAndUpdate(
+      { user: UserId },
+      { ...req.body, age: Number(req.body.age) },
+      { new: true, runValidators: true }
+    );
+
+    if (!updated) return res.status(404).json({ message: "Profile not found" });
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      profile: updated,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 export default router;

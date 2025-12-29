@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Edit Profile</title>
+  </head>
+
+  <body>
+    <div class="form-container">
+      <h1>Edit Profile</h1>
+
+      <form id="editForm">
+        <input type="number" id="age" placeholder="Age" required />
+
+        <input type="text" id="industry" placeholder="Industry" required />
+
+        <input type="text" id="role" placeholder="Role" required />
+
+        <input type="text" id="skills" placeholder="Skills (comma-separated)" />
+
+        <input
+          type="text"
+          id="hobbies"
+          placeholder="Hobbies (comma-separated)"
+        />
+
+        <input type="text" id="bio" placeholder="Bio" />
+
+        <input type="text" id="location" placeholder="Location" />
+
+        <button type="submit">Save Changes</button>
+      </form>
+
+      <a href="dashboard.html">Back to Dashboard</a>
+    </div>
+
+    <script>
+      const token = localStorage.getItem("token");
+      if (!token) window.location.href = "login.html";
+
+      const age = document.getElementById("age");
+      const industry = document.getElementById("industry");
+      const role = document.getElementById("role");
+      const skills = document.getElementById("skills");
+      const hobbies = document.getElementById("hobbies");
+      const bio = document.getElementById("bio");
+      const locationField = document.getElementById("location");
+
+      // Load current profile
+      (async () => {
+        const res = await fetch("http://localhost:5000/profile/me", {
+          headers: { Authorization: "Bearer " + token },
+        });
+
+        if (res.status === 404) {
+          window.location.href = "profile.html";
+          return;
+        }
+
+        const data = await res.json();
+        const p = data.profile;
+
+        age.value = p.age;
+        industry.value = p.industry;
+        role.value = p.role;
+        skills.value = p.skills.join(", ");
+        hobbies.value = p.hobbies.join(", ");
+        bio.value = p.bio;
+        locationField.value = p.location;
+      })();
+
+      // Submit form to update
+      document
+        .getElementById("editForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const profileData = {
+            age: Number(age.value),
+            industry: industry.value,
+            role: role.value,
+            skills: skills.value.split(",").map((s) => s.trim()),
+            hobbies: hobbies.value.split(",").map((h) => h.trim()),
+            bio: bio.value,
+            location: locationField.value,
+          };
+
+          const res = await fetch("http://localhost:5000/profile", {
+            method: "PUT",
+            headers: {
+              Authorization: "Bearer " + token,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(profileData),
+          });
+
+          const result = await res.json();
+
+          if (res.status === 200) {
+            alert("Profile updated successfully");
+            window.location.href = "dashboard.html";
+          } else {
+            alert(result.message || "Update failed");
+          }
+        });
+    </script>
+  </body>
+</html>
