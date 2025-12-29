@@ -5,95 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
     <title>Dashboard</title>
-
-    <style>
-      .profile-card {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 350px;
-        margin: 20px auto;
-        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 10px;
-        font-family: Arial, sans-serif;
-      }
-
-      .profile-card h2 {
-        margin-bottom: 10px;
-        text-align: center;
-      }
-
-      .profile-details p {
-        margin: 6px 0;
-      }
-
-      nav {
-        margin-top: 20px;
-        display: flex;
-        justify-content: space-between;
-        width: 350px;
-        margin-inline: auto;
-      }
-
-      nav button {
-        cursor: pointer;
-      }
-    </style>
   </head>
 
   <body>
-    <div class="container">
-      <h1>Dashboard</h1>
-      <p id="welcomeMsg"></p>
+    <div class="dashboard-wrapper">
+      <h1 class="dashboard-title">Dashboard</h1>
 
       <div id="profileContainer"></div>
 
-      <nav>
+      <div class="nav-actions">
         <a href="profile.html">Edit Profile</a>
         <button id="logoutBtn">Logout</button>
-      </nav>
+      </div>
     </div>
 
     <script>
       const token = localStorage.getItem("token");
-      const profileContainer = document.getElementById("profileContainer");
+      const container = document.getElementById("profileContainer");
 
-      if (!token) {
-        window.location.href = "login.html";
-      }
+      if (!token) window.location.href = "login.html";
 
-      // Fetch profile
       async function loadProfile() {
         const response = await fetch("http://localhost:5000/profile/me", {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
+          headers: { Authorization: "Bearer " + token },
         });
 
-        const data = await response.json();
-        if (data.profile) {
-          const p = data.profile;
-
-          profileContainer.innerHTML = `
-            <div class="profile-card">
-              <h1>Welcome, ${p.name}</h1>
-              <h2>${p.role} • ${p.industry}</h2>
-              <div class="profile-details">
-                <p><strong>Age:</strong> ${p.age}</p>
-                <p><strong>Bio:</strong> ${p.bio}</p>
-                <p><strong>Location:</strong> ${p.location}</p>
-                <p><strong>Skills:</strong> ${p.skills.join(", ")}</p>
-                <p><strong>Hobbies:</strong> ${p.hobbies.join(", ")}</p>
-              </div>
-            </div>
-          `;
-        } else {
-          profileContainer.innerHTML = "<p>No profile found. Create one.</p>";
+        if (response.status === 404) {
+          container.innerHTML = `<p>No profile found. <a href="profile.html">Create one</a></p>`;
+          return;
         }
+
+        const data = await response.json();
+        const p = data.profile;
+
+        container.innerHTML = `
+          <div class="profile-card">
+            <h2>Welcome, ${p.user.name}</h2>
+            <h3>${p.role} • ${p.industry}</h3>
+
+            <p><span class="profile-label">Age:</span> ${p.age}</p>
+            <p><span class="profile-label">Bio:</span> ${p.bio}</p>
+            <p><span class="profile-label">Location:</span> ${p.location}</p>
+            <p><span class="profile-label">Skills:</span> ${p.skills.join(
+              ", "
+            )}</p>
+            <p><span class="profile-label">Hobbies:</span> ${p.hobbies.join(
+              ", "
+            )}</p>
+          </div>
+        `;
       }
 
       loadProfile();
 
-      // Logout
       document.getElementById("logoutBtn").addEventListener("click", () => {
         localStorage.removeItem("token");
         window.location.href = "login.html";

@@ -32,29 +32,25 @@ if (loginForm) {
         email: document.getElementById("loginEmail").value,
         password: document.getElementById("loginPassword").value,
       }),
-      mode: "cors",
     });
 
     const data = await response.json();
     document.getElementById("loginResponse").innerText = data.message;
 
-    if (data.token) {
-      localStorage.setItem("token", data.token);
+    if (!data.token) return;
 
-      // Check if profile exists
-      const check = await fetch("http://localhost:5000/profile/me", {
-        headers: {
-          Authorization: "Bearer " + data.token,
-        },
-      });
+    localStorage.setItem("token", data.token);
 
-      const result = await check.json();
+    // Check for profile
+    const check = await fetch("http://localhost:5000/profile/me", {
+      headers: { Authorization: `Bearer ${data.token}` },
+    });
 
-      if (result.exists) {
-        window.location.href = "dashboard.html";
-      } else {
-        window.location.href = "profile.html";
-      }
+    // Route based on profile
+    if (check.status === 200) {
+      window.location.href = "dashboard.html"; // profile exists
+    } else {
+      window.location.href = "profile.html"; // no profile yet
     }
   });
 }
